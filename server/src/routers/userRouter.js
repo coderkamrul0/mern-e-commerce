@@ -4,7 +4,5 @@ const userRouter = express.Router();
 
   
 userRouter.get("/", getUsers);
-userRouter.get("/profile", );
   
-
 module.exports = userRouter;
