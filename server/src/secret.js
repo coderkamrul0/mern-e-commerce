@@ -4,4 +4,6 @@ const mongodbURL = process.env.MONGODB_URL;
 const defaultUserImage =
   process.env.DEFAULT_USER_IMAGE || "public/images/users/default.png";
 
-module.exports = { serverPort, mongodbURL,defaultUserImage };
+const jwtActivationKey = process.env.JWT_ACTIVATION_KEY
+
+module.exports = { serverPort, mongodbURL,defaultUserImage,jwtActivationKey };
