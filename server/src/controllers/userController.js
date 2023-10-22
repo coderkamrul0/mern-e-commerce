@@ -1,11 +1,12 @@
 const createError = require("http-errors");
 const User = require("../models/userModel");
+const { successResponse } = require("./responseController");
 
 const getUsers = async (req, res, next) => {
   try {
     const search = req.query.search || "";
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 2;
+    const limit = Number(req.query.limit) || 1;
 
     const searchRegEx = new RegExp(".*" + search + ".*", "i");
     const filter = {
@@ -26,14 +27,17 @@ const getUsers = async (req, res, next) => {
 
     if (!users) throw createError(404, "user not found.");
 
-    res.status(200).send({
-      message: "All users here",
-      users,
-      pagination: {
-        totalPages: Math.ceil(count / limit),
-        currentPage: page,
-        previousPage: page - 1 > 0 ? page - 1 : null,
-        nextPage: page + 1 <= Math.ceil(count / limit) ? page + 1 : null,
+    return successResponse(res, {
+      statusCode: 200,
+      message: "return success",
+      payload: {
+        users,
+        pagination: {
+          totalPages: Math.ceil(count / limit),
+          currentPage: page,
+          previousPage: page - 1 > 0 ? page - 1 : null,
+          nextPage: page + 1 <= Math.ceil(count / limit) ? page + 1 : null,
+        },
       },
     });
   } catch (error) {
