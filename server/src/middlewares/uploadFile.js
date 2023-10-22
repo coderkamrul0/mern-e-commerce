@@ -1,8 +1,14 @@
 const multer = require("multer");
 const path = require("path");
-const { uploadDir } = require("../secret");
+const createError = require("http-errors");
 
-const UPLOAD_DIR = uploadDir;
+const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) || 2097152;
+const ALLOWED_FILE_TYPE = process.env.ALLOWED_FILE_TYPE || [
+  "jpg",
+  "jpeg",
+  "png",
+];
+const UPLOAD_DIR = process.env.UPLOAD_FILE || "public/images/users";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -10,10 +16,25 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const extname = path.extname(file.originalname);
-    cb(null,Date.now() + '-' + file.originalname.replace(extname, '') + extname)
+    cb(
+      null,
+      Date.now() + "-" + file.originalname.replace(extname, "") + extname
+    );
   },
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+  const extname = path.extname(file.originalname);
+  if (!ALLOWED_FILE_TYPE.includes(extname.substring(1))) {
+    return cb(createError(400, "This file type not allowed."));
+  }
+  cb(null, true);
+};
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: MAX_FILE_SIZE },
+  fileFilter,
+});
 
 module.exports = upload;
